@@ -59,7 +59,7 @@ int altura_ArvBin(ArvBin *raiz){
     int alt_esq = altura_ArvBin(&((*raiz)->esq));
     int alt_dir = altura_ArvBin(&((*raiz)->dir));
     
-    if(alt_esq>alt_dir)
+    if(alt_esq<alt_dir)
         return (alt_dir + 1);
     else
         return(alt_esq + 1);

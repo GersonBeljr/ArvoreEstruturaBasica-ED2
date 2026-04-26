@@ -4,6 +4,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 typedef enum {
     NUMERO,
@@ -130,43 +131,41 @@ int insere_ArvBin(ArvBin* raiz, char valor[]){
         
     struct NO* new;
     new = (struct NO*) malloc(sizeof(struct NO));
-    
     //Verifica se o novo nó foi criado corretamente
     if(new == NULL)
         return 0;
     
-    strcpy(novo->info, valor); //passar a string valor
+    strcpy(new->info, valor); //passar a string valor
     new->dir = NULL;
     new->esq = NULL;
     
-    if(*raiz == NULL)
+    if(*raiz == NULL){
         *raiz = new;
+        return 1;
+    }
     else{
         struct NO* atual = *raiz;
         struct NO* ant = NULL;
         while(atual != NULL){
             ant = atual;
             
-            //Se o elemento ja existir na arvore cancela
-            if(valor == atual->info){
-                free(new);
-                return 0;
-            }
-            
-            //Percorre verificando se o valor é maior ou menor que a esq ou dir;
-            /* NÃO PRECISA MAIS PQ A ARVORE TEM Q FICAR NA FORMA DA EXPRESSÃO
-                if(valor> atual->info){
-                    atual = atual->dir;
-                } else {
-                    atual = atual->esq;
-                }
-            */
-        };
+            //se for uma operação, tem q entrar nela, com prioridade na esquerda
+            if(atual->esq != NULL && atual->esq->tipo == OPERADOR)atual = atual->esq;
+            if(atual->dir != NULL && atual->dir->tipo==OPERADOR)atual = atual->dir;
         
-        if(valor > ant->info)
-            ant->dir = new;
-        else
-            ant->esq = new;
+            //se não, entra na esquerda
+            if(atual->esq==NULL){
+                atual->esq=new;
+                break;
+            }
+            else{
+                if(atual->dir==NULL){
+                    atual->dir=new;
+                    break;
+                }
+                else atual= atual->esq;
+            }
+        };
         
         return 1;
     };
@@ -234,7 +233,7 @@ int remove_ArvBin(ArvBin *raiz, char valor[]){
 }
 
 //consulta: retorna 1 se achou e 0 se não;
-int consulta_ArvBin(ArvBin *raiz, int valor){
+int consulta_ArvBin(ArvBin *raiz, char valor[]){
     if(raiz == NULL)
         return 0;
     struct NO* atual = *raiz;
@@ -254,6 +253,10 @@ int consulta_ArvBin(ArvBin *raiz, int valor){
 int main()
 {
    ArvBin* raiz = cria_ArvBin();
+   insere_ArvBin(raiz, "-");
+   insere_ArvBin(raiz, "A");
+   insere_ArvBin(raiz, "B");
+   preOrdem_ArvBin(raiz);
 
     return 0;
 }

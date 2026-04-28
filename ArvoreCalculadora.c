@@ -13,12 +13,12 @@ typedef enum {
 } Tipo;
 
 //Define a estrutura
-struct NO{
+typedef struct NO{
     Tipo tipo;
     char info[10]; //a info deve ser char para aceitar os símbolos e letras (e para os numeros, 10 digitos max)
     struct NO *esq;
     struct NO *dir;
-};
+}NO;
 
 //Define o tipo da estrutura e coloca nela o nome ArvBin
 typedef struct NO* ArvBin;
@@ -31,7 +31,7 @@ ArvBin* cria_ArvBin(){
 }
 
 //Percorre a arvore e libera NO a NO
-void libera_NO(struct NO* no){
+void libera_NO(NO* no){
     if(no == NULL)
         return;
     libera_NO(no->esq);
@@ -139,6 +139,20 @@ int insere_ArvBin(ArvBin* raiz, char valor[]){
     new->dir = NULL;
     new->esq = NULL;
     
+    //coloca o tipo certo
+    if(strcmp(new->info, "sqrt") == 0 ||
+       strcmp(new->info, "log") == 0 ||
+        strcmp(new->info, "*-1") == 0) //NEGATIVO
+        new->tipo = FUNCAO;
+    else if(strcmp(new->info, "+") == 0 ||
+            strcmp(new->info, "-") == 0 ||
+            strcmp(new->info, "*") == 0 ||
+            strcmp(new->info, "/") == 0 ||
+            strcmp(new->info, "^") == 0)
+            new->tipo = OPERADOR;
+    else new->tipo = NUMERO;
+    
+    
     if(*raiz == NULL){
         *raiz = new;
         return 1;
@@ -147,23 +161,43 @@ int insere_ArvBin(ArvBin* raiz, char valor[]){
         struct NO* atual = *raiz;
         struct NO* ant = NULL;
         while(atual != NULL){
-            ant = atual;
+            
+            //casos onde deve dar ré
+                if(atual->tipo==FUNCAO && atual->dir!= NULL && atual->dir->tipo==NUMERO){
+                         atual = ant; //da ré
+                         atual= atual->esq;
+                    }
+                
+                if(atual->tipo==OPERADOR && atual->dir!= NULL && atual->esq!=NULL && atual->dir->tipo== NUMERO && atual->esq->tipo==NUMERO) {
+                        atual = ant; //da ré
+                        
+                    }
+            
+            //SE FOR UMA FUNÇÃO, DIREITA NA HORA
+                if(atual->tipo==FUNCAO)atual = atual->dir;
             
             //se for uma operação, tem q entrar nela, com prioridade na esquerda
-            if(atual->esq != NULL && atual->esq->tipo == OPERADOR)atual = atual->esq;
-            if(atual->dir != NULL && atual->dir->tipo==OPERADOR)atual = atual->dir;
+                if(atual->esq != NULL && atual->esq->tipo == OPERADOR){
+                    atual = atual->esq;
+                }
+                if(atual->dir != NULL && atual->dir->tipo==OPERADOR)atual = atual->dir;
         
             //se não, entra na esquerda
             if(atual->esq==NULL){
+                ant = atual;
                 atual->esq=new;
                 break;
             }
             else{
                 if(atual->dir==NULL){
+                    ant = atual;
                     atual->dir=new;
                     break;
                 }
-                else atual= atual->esq;
+                else {
+                    ant = atual;
+                    atual= atual->esq;
+                }
             }
         };
         
@@ -173,7 +207,7 @@ int insere_ArvBin(ArvBin* raiz, char valor[]){
 
 //Remoção (Remover folha, remover no com 1 ou 2 filhos);
 
-struct NO* remove_atual(struct NO* atual){
+NO* remove_atual(struct NO* atual){
     struct NO *no1, *no2;
     
     //Sem filho a esq
@@ -253,10 +287,16 @@ int consulta_ArvBin(ArvBin *raiz, char valor[]){
 int main()
 {
    ArvBin* raiz = cria_ArvBin();
+   insere_ArvBin(raiz, "+");
    insere_ArvBin(raiz, "-");
-   insere_ArvBin(raiz, "A");
-   insere_ArvBin(raiz, "B");
-   preOrdem_ArvBin(raiz);
+   insere_ArvBin(raiz, "^");
+   insere_ArvBin(raiz, "x");
+   insere_ArvBin(raiz, "2");
+   insere_ArvBin(raiz, "*");
+   insere_ArvBin(raiz, "2");
+   insere_ArvBin(raiz, "x");
+   insere_ArvBin(raiz, "1");
+   inOrdem_ArvBin(raiz);
 
     return 0;
 }

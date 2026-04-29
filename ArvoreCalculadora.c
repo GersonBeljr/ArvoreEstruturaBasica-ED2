@@ -9,7 +9,8 @@
 typedef enum {
     NUMERO,
     OPERADOR,
-    FUNCAO
+    CHEIO,
+    FUNCAO,
 } Tipo;
 
 //Define a estrutura
@@ -162,42 +163,86 @@ int insere_ArvBin(ArvBin* raiz, char valor[]){
         struct NO* ant = NULL;
         while(atual != NULL){
             
-            //casos onde deve dar ré
-                if(atual->tipo==FUNCAO && atual->dir!= NULL && atual->dir->tipo==NUMERO){
-                         atual = ant; //da ré
-                         atual= atual->esq;
+            //CHEIO NA ESQ
+            if(atual->esq!=NULL && atual->esq->tipo==CHEIO){
+                //CHEIO PROS DOIS LADOS
+                if(atual->dir!=NULL && atual->dir->tipo==CHEIO){
+                    if(ant==NULL){
+                        //aq o usuário colocou um nodo a mais, deve falar que não dá pra colocar e sair
+                        printf("erro de inserção: verifique a sintaxe da sua expressão (lembre-se deve estar pré-ordenada)\n");
+                        break;
                     }
-                
-                if(atual->tipo==OPERADOR && atual->dir!= NULL && atual->esq!=NULL && atual->dir->tipo== NUMERO && atual->esq->tipo==NUMERO) {
-                        atual = ant; //da ré
-                        
-                    }
-            
-            //SE FOR UMA FUNÇÃO, DIREITA NA HORA
-                if(atual->tipo==FUNCAO)atual = atual->dir;
-            
-            //se for uma operação, tem q entrar nela, com prioridade na esquerda
-                if(atual->esq != NULL && atual->esq->tipo == OPERADOR){
-                    atual = atual->esq;
+                    //da ré até o final pra garantir e abate esse op
+                    atual->tipo=CHEIO;
+                    atual = *raiz;
+                    continue;
                 }
-                if(atual->dir != NULL && atual->dir->tipo==OPERADOR)atual = atual->dir;
-        
-            //se não, entra na esquerda
-            if(atual->esq==NULL){
-                ant = atual;
-                atual->esq=new;
-                break;
-            }
-            else{
+
                 if(atual->dir==NULL){
-                    ant = atual;
+                    //coloca
                     atual->dir=new;
                     break;
                 }
-                else {
-                    ant = atual;
-                    atual= atual->esq;
+                //anda
+                ant = atual;
+                atual= atual->dir;
+                continue;
+            }
+
+            if(atual->tipo==OPERADOR){
+                if(atual->esq!=NULL && atual->esq->tipo==NUMERO && atual->dir!=NULL && atual->dir->tipo==NUMERO){
+                    //da ré e abate esse op
+                    atual->tipo=CHEIO;
+                    atual = ant;
+                    continue;
                 }
+            }
+            
+            if(atual->tipo==FUNCAO){
+                if(atual->dir!=NULL && atual->dir->tipo==NUMERO){
+                    //da ré e abate essa func
+                    atual->tipo=CHEIO;
+                    atual = ant;
+                    continue;
+                }
+                if(atual->dir==NULL){
+                    //coloca
+                    atual->dir=new;
+                    break;
+                } else{
+                    //anda
+                    ant = atual;
+                    atual = atual->dir;
+                    continue;
+                }
+            }
+
+            if(atual->esq==NULL){
+                //coloca
+                atual->esq=new;
+                break;
+            } else{
+                if(atual->esq != NULL && atual->esq->tipo == OPERADOR){
+                    //anda
+                    ant = atual;
+                    atual=atual->esq;
+                    continue;
+                }
+                if(atual->esq != NULL && atual->esq->tipo == FUNCAO){
+                    //anda
+                    ant = atual;
+                    atual=atual->esq;
+                    continue;
+                }
+                if(atual->dir==NULL){
+                    //coloca
+                    atual->dir=new;
+                    break;
+                }
+                //anda
+                ant = atual;
+                atual= atual->dir;
+                continue;
             }
         };
         

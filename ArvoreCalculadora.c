@@ -143,7 +143,7 @@ int insere_ArvBin(ArvBin* raiz, char valor[]){
     //coloca o tipo certo
     if(strcmp(new->info, "sqrt") == 0 ||
        strcmp(new->info, "log") == 0 ||
-        strcmp(new->info, "*-1") == 0) //NEGATIVO
+        strcmp(new->info, "neg") == 0)
         new->tipo = FUNCAO;
     else if(strcmp(new->info, "+") == 0 ||
             strcmp(new->info, "-") == 0 ||
@@ -192,9 +192,9 @@ int insere_ArvBin(ArvBin* raiz, char valor[]){
 
             if(atual->tipo==OPERADOR){
                 if(atual->esq!=NULL && (atual->esq->tipo==NUMERO||atual->esq->tipo==CHEIO) && atual->dir!=NULL && (atual->dir->tipo==NUMERO||atual->dir->tipo==CHEIO)){
-                    //da ré e abate esse op
+                    //da ré até o começo e abate esse op
                     atual->tipo=CHEIO;
-                    atual = ant;
+                    atual = *raiz;
                     continue;
                 }
             }
@@ -336,7 +336,7 @@ int main()
    ArvBin* raiz = cria_ArvBin();
     insere_ArvBin(raiz, "/");
    insere_ArvBin(raiz, "+");
-   insere_ArvBin(raiz, "-");
+   insere_ArvBin(raiz, "neg");
    insere_ArvBin(raiz, "b");
    insere_ArvBin(raiz, "sqrt");
    insere_ArvBin(raiz, "-");
@@ -345,6 +345,7 @@ int main()
    insere_ArvBin(raiz, "2");
    insere_ArvBin(raiz, "*");
    insere_ArvBin(raiz, "4");
+   insere_ArvBin(raiz, "*");
    insere_ArvBin(raiz, "a");
    insere_ArvBin(raiz, "c");
    insere_ArvBin(raiz, "*");

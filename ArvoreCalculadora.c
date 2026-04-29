@@ -175,6 +175,7 @@ int insere_ArvBin(ArvBin* raiz, char valor[]){
                     //da ré até o final pra garantir e abate esse op
                     atual->tipo=CHEIO;
                     atual = *raiz;
+                    ant = NULL;
                     continue;
                 }
 
@@ -190,7 +191,7 @@ int insere_ArvBin(ArvBin* raiz, char valor[]){
             }
 
             if(atual->tipo==OPERADOR){
-                if(atual->esq!=NULL && atual->esq->tipo==NUMERO && atual->dir!=NULL && atual->dir->tipo==NUMERO){
+                if(atual->esq!=NULL && (atual->esq->tipo==NUMERO||atual->esq->tipo==CHEIO) && atual->dir!=NULL && (atual->dir->tipo==NUMERO||atual->dir->tipo==CHEIO)){
                     //da ré e abate esse op
                     atual->tipo=CHEIO;
                     atual = ant;
@@ -199,10 +200,11 @@ int insere_ArvBin(ArvBin* raiz, char valor[]){
             }
             
             if(atual->tipo==FUNCAO){
-                if(atual->dir!=NULL && atual->dir->tipo==NUMERO){
-                    //da ré e abate essa func
+                if(atual->dir!=NULL && (atual->dir->tipo==NUMERO||atual->dir->tipo==CHEIO)){
+                    //da ré até a raiz e abate essa func
                     atual->tipo=CHEIO;
-                    atual = ant;
+                    atual = *raiz;
+                    ant=NULL;
                     continue;
                 }
                 if(atual->dir==NULL){
@@ -332,15 +334,22 @@ int consulta_ArvBin(ArvBin *raiz, char valor[]){
 int main()
 {
    ArvBin* raiz = cria_ArvBin();
+    insere_ArvBin(raiz, "/");
    insere_ArvBin(raiz, "+");
    insere_ArvBin(raiz, "-");
+   insere_ArvBin(raiz, "b");
+   insere_ArvBin(raiz, "sqrt");
+   insere_ArvBin(raiz, "-");
    insere_ArvBin(raiz, "^");
-   insere_ArvBin(raiz, "x");
+   insere_ArvBin(raiz, "b");
    insere_ArvBin(raiz, "2");
    insere_ArvBin(raiz, "*");
+   insere_ArvBin(raiz, "4");
+   insere_ArvBin(raiz, "a");
+   insere_ArvBin(raiz, "c");
+   insere_ArvBin(raiz, "*");
    insere_ArvBin(raiz, "2");
-   insere_ArvBin(raiz, "x");
-   insere_ArvBin(raiz, "1");
+   insere_ArvBin(raiz, "a");
    inOrdem_ArvBin(raiz);
 
     return 0;

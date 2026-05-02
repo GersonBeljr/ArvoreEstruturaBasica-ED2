@@ -332,26 +332,65 @@ int consulta_ArvBin(ArvBin *raiz, char valor[]){
 
 
 int main()
-{
-   ArvBin* raiz = cria_ArvBin();
+{   
+    ListaExp* lista = criaLista();
+    char expressao[30];
+
+    while(1){
+        printf("insira a expressão de até 30 caracteres (0 para terminar): ");
+        scanf("%s", expressao);
+        if(strcmp(expressao, "0") == 0) break;
+
+        //cria novo nó
+        NoLista *new = (NoLista*) malloc(sizeof(NoLista));
+        if(new == NULL){
+            printf("Erro ao inserir expressão (desinstala o cod ae pq n tem espaço nessa bagaça)");
+            break;
+        }
+        strcpy(new->exp, expressao); 
+        new->next=NULL;
+
+        //insere no fim
+        if(*lista == NULL){
+            *lista = new;
+        } else {
+            NoLista *aux = *lista;
+            while(aux->next != NULL)
+                aux = aux->next;
+            aux->next = new;
+        }
+    }
+
+    //lógica de atravessar a lista de exps traduzindo td pra preOrdem
+    NoLista *carro = *lista;
+    while(carro!=NULL){
+        strcpy(carro->exp, toPreOrdem(carro->exp)); 
+        carro = carro->next;
+    } 
+
+    ArvBin* raiz = cria_ArvBin();
+
+    /* 
     insere_ArvBin(raiz, "/");
-   insere_ArvBin(raiz, "+");
-   insere_ArvBin(raiz, "neg");
-   insere_ArvBin(raiz, "b");
-   insere_ArvBin(raiz, "sqrt");
-   insere_ArvBin(raiz, "-");
-   insere_ArvBin(raiz, "^");
-   insere_ArvBin(raiz, "b");
-   insere_ArvBin(raiz, "2");
-   insere_ArvBin(raiz, "*");
-   insere_ArvBin(raiz, "4");
-   insere_ArvBin(raiz, "*");
-   insere_ArvBin(raiz, "a");
-   insere_ArvBin(raiz, "c");
-   insere_ArvBin(raiz, "*");
-   insere_ArvBin(raiz, "2");
-   insere_ArvBin(raiz, "a");
-   inOrdem_ArvBin(raiz);
+    insere_ArvBin(raiz, "+");
+    insere_ArvBin(raiz, "neg");
+    insere_ArvBin(raiz, "b");
+    insere_ArvBin(raiz, "sqrt");
+    insere_ArvBin(raiz, "-");
+    insere_ArvBin(raiz, "^");
+    insere_ArvBin(raiz, "b");
+    insere_ArvBin(raiz, "2");
+    insere_ArvBin(raiz, "*");
+    insere_ArvBin(raiz, "4");
+    insere_ArvBin(raiz, "*");
+    insere_ArvBin(raiz, "a");
+    insere_ArvBin(raiz, "c");
+    insere_ArvBin(raiz, "*");
+    insere_ArvBin(raiz, "2");
+    insere_ArvBin(raiz, "a");
+    inOrdem_ArvBin(raiz);
+    */
+
 
     return 0;
 }

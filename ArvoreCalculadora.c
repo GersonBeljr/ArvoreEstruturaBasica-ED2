@@ -364,7 +364,8 @@ int main()
     //lógica de atravessar a lista de exps traduzindo td pra preOrdem
     NoLista *carro = *lista;
     while(carro!=NULL){
-        strcpy(carro->exp, toPreOrdem(carro->exp)); 
+        strcpy(carro->exp, toPreFix(carro->exp)); 
+        //printf("%s\n", carro->exp);
         carro = carro->next;
     } 
 

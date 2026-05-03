@@ -38,7 +38,6 @@ void libera_NO(NO* no){
     libera_NO(no->esq);
     libera_NO(no->dir);
     free(no);
-    no = NULL;
 }
 
 //Libera a arvore toda
@@ -95,7 +94,7 @@ void preOrdem_ArvBin(ArvBin *raiz){
     if(raiz == NULL)
         return;
     if(*raiz != NULL){
-        printf("%s\n", (*raiz)->info);
+        printf("%s", (*raiz)->info);
         preOrdem_ArvBin(&((*raiz)->esq));
         preOrdem_ArvBin(&((*raiz)->dir));
     }
@@ -107,7 +106,7 @@ void inOrdem_ArvBin(ArvBin *raiz){
         return;
     if(*raiz != NULL){
         inOrdem_ArvBin(&((*raiz)->esq));
-        printf("%s\n", (*raiz)->info);
+        printf("%s", (*raiz)->info);
         inOrdem_ArvBin(&((*raiz)->dir));
     }
 };
@@ -119,7 +118,7 @@ void posOrdem_ArvBin(ArvBin *raiz){
     if(*raiz != NULL){
         posOrdem_ArvBin(&((*raiz)->esq));
         posOrdem_ArvBin(&((*raiz)->dir));
-        printf("%s\n", (*raiz)->info);
+        printf("%s", (*raiz)->info);
     }
 };
 
@@ -252,37 +251,6 @@ int insere_ArvBin(ArvBin* raiz, char valor[]){
     };
 };
 
-//Remoção (Remover folha, remover no com 1 ou 2 filhos);
-
-NO* remove_atual(struct NO* atual){
-    struct NO *no1, *no2;
-    
-    //Sem filho a esq
-    if(atual->esq == NULL){
-        no2 = atual->dir;
-        free(atual);
-        return no2;
-    }
-    
-    //Procura o filho mais a direira da sub-arv da esq;
-    no1 = atual;
-    no2 - atual->esq;
-    while(no2->dir != NULL){
-        no1 = no2;
-        no2 = no2->dir;
-    }
-    
-    //Procura o filho mais a direita e coloca no lugar
-    if(no1 != atual){
-        no1->dir = no2->esq;
-        no2->esq = atual->esq;
-    }
-    no2->dir = atual->dir;
-    
-    free(atual);
-    return no2;
-}
-
 int remove_ArvBin(ArvBin *raiz, char valor[]){
     //Verifica se a arvore já não existe
     if(raiz == NULL) return 0;
@@ -369,7 +337,27 @@ int main()
         carro = carro->next;
     } 
 
-    ArvBin* raiz = cria_ArvBin();
+    //LÓGICA DA INSERÇÃO NA ÁRVORE
+    carro = *lista;
+    int i=0, e=1;
+    char expPart[2];
+
+    printf("-----ÁRVORES DE CADA EXPRESSÃO ESCRITAS EM INORDEM-----\n");
+    while(carro!=NULL){
+        ArvBin* raiz = cria_ArvBin();
+        printf("\n%dª EXPRESSÃO: \n", e);
+        for(i=0;carro->exp[i]!='\0';i++){
+            sprintf(expPart, "%c", carro->exp[i]);
+            insere_ArvBin(raiz, expPart);
+        }
+        inOrdem_ArvBin(raiz);
+        carro = carro->next;
+
+        //LIBERA TD
+        libera_ArvBin(*raiz);  
+        e++;
+    } 
+
 
     /* 
     insere_ArvBin(raiz, "/");

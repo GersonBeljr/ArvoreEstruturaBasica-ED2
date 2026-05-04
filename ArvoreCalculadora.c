@@ -276,8 +276,8 @@ int main()
 
     while(1){
         printf("insira a expressão de até 30 caracteres (0 para terminar): ");
-        scanf("%s", expressao);
-        if(strcmp(expressao, "0") == 0) break;
+        fgets(expressao, sizeof(expressao), stdin); //scaneia espacos, só para qndo quebra linha
+        if(strcmp(expressao, "0\n") == 0) break;//o fgets deixa o \n no final
 
         //cria novo nó
         NoLista *new = (NoLista*) malloc(sizeof(NoLista));
@@ -316,7 +316,7 @@ int main()
     carro = *lista;
     int i=0;
     e=1;
-    char expPart[2];
+    char expPart[20];
 
     printf("-----ÁRVORES DE CADA EXPRESSÃO ESCRITAS EM INORDEM-----\n");
     while(carro!=NULL){
@@ -325,6 +325,7 @@ int main()
         for(i=0;carro->exp[i]!='\0';i++){
             //se for funcao
             if(carro->exp[i]=='s' && carro->exp[i+1]=='q'){
+                insere_ArvBin(raiz, expPart);
                 sprintf(expPart, "%s","sqrt");
                 insere_ArvBin(raiz, expPart);
                 i = i+3;
@@ -332,6 +333,7 @@ int main()
             }
 
             if(carro->exp[i]=='l' && carro->exp[i+1]=='o'){
+                insere_ArvBin(raiz, expPart);
                 sprintf(expPart, "%s","log");
                 insere_ArvBin(raiz, expPart);
                 i = i+2;
@@ -339,15 +341,55 @@ int main()
             }
 
             if(carro->exp[i]=='n' && carro->exp[i+1]=='e'){
+                insere_ArvBin(raiz, expPart);
                 sprintf(expPart, "%s","neg");
                 insere_ArvBin(raiz, expPart);
+                sprintf(expPart, "%s","");
                 i = i+2;
                 continue;
             }
-
-
-            sprintf(expPart, "%c", carro->exp[i]);
-            insere_ArvBin(raiz, expPart);
+            
+            //se for op
+            switch (carro->exp[i]) {
+                case '+':
+                    insere_ArvBin(raiz, expPart); //insere o número q ta guardado (pq ele acabou)
+                    sprintf(expPart, "%c",carro->exp[i]);//tira o número e bota o op 
+                    insere_ArvBin(raiz, expPart);//insere o op
+                    sprintf(expPart, "%s",""); //tira o op
+                    break;
+                case '-':
+                    insere_ArvBin(raiz, expPart); //insere o número q ta guardado (pq ele acabou)
+                    sprintf(expPart, "%c",carro->exp[i]);//tira o número e bota o op 
+                    insere_ArvBin(raiz, expPart);//insere o op
+                    sprintf(expPart, "%s",""); //tira o op
+                    break;
+                case '*':
+                    insere_ArvBin(raiz, expPart); //insere o número q ta guardado (pq ele acabou)
+                    sprintf(expPart, "%c",carro->exp[i]);//tira o número e bota o op 
+                    insere_ArvBin(raiz, expPart);//insere o op
+                    sprintf(expPart, "%s",""); //tira o op
+                    break;
+                case '/':
+                    insere_ArvBin(raiz, expPart); //insere o número q ta guardado (pq ele acabou)
+                    sprintf(expPart, "%c",carro->exp[i]);//tira o número e bota o op 
+                    insere_ArvBin(raiz, expPart);//insere o op
+                    sprintf(expPart, "%s",""); //tira o op
+                    break;
+                case '^':
+                    insere_ArvBin(raiz, expPart); //insere o número q ta guardado (pq ele acabou)
+                    sprintf(expPart, "%c",carro->exp[i]);//tira o número e bota o op 
+                    insere_ArvBin(raiz, expPart);//insere o op
+                    sprintf(expPart, "%s",""); //tira o op
+                    break;
+                case 20:
+                    //espaço
+                    insere_ArvBin(raiz, expPart); //insere o número q ta guardado (pq ele acabou)
+                    sprintf(expPart, "%s",""); //tira o numero
+                    break;
+                default:
+                    //é dígito
+                    sprintf(expPart + strlen(expPart), "%c", carro->exp[i]); //bota o dígito sem tirar os outros
+            }
         }
         inOrdem_ArvBin(raiz);
         printf("\n");

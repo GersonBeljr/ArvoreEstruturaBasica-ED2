@@ -300,16 +300,22 @@ int main()
     }
 
     //lógica de atravessar a lista de exps traduzindo td pra preOrdem
+    int e=1;
+    printf("\n-----CONVERTENDO EXPRESSÕES PARA ORDEM PREFIXA-----\n");
     NoLista *carro = *lista;
     while(carro!=NULL){
+        printf("\n%dª EXPRESSÃO: \n", e);
         strcpy(carro->exp, toPreFix(carro->exp)); 
-        //printf("%s\n", carro->exp);
+        printf("%s\n", carro->exp);
         carro = carro->next;
+        e++;
     } 
+    printf("\n\n");
 
     //LÓGICA DA INSERÇÃO NA ÁRVORE
     carro = *lista;
-    int i=0, e=1;
+    int i=0;
+    e=1;
     char expPart[2];
 
     printf("-----ÁRVORES DE CADA EXPRESSÃO ESCRITAS EM INORDEM-----\n");
@@ -344,35 +350,13 @@ int main()
             insere_ArvBin(raiz, expPart);
         }
         inOrdem_ArvBin(raiz);
+        printf("\n");
         carro = carro->next;
 
         //LIBERA TD
         libera_ArvBin(raiz);  
         e++;
     } 
-
-
-    /* 
-    insere_ArvBin(raiz, "/");
-    insere_ArvBin(raiz, "+");
-    insere_ArvBin(raiz, "neg");
-    insere_ArvBin(raiz, "b");
-    insere_ArvBin(raiz, "sqrt");
-    insere_ArvBin(raiz, "-");
-    insere_ArvBin(raiz, "^");
-    insere_ArvBin(raiz, "b");
-    insere_ArvBin(raiz, "2");
-    insere_ArvBin(raiz, "*");
-    insere_ArvBin(raiz, "4");
-    insere_ArvBin(raiz, "*");
-    insere_ArvBin(raiz, "a");
-    insere_ArvBin(raiz, "c");
-    insere_ArvBin(raiz, "*");
-    insere_ArvBin(raiz, "2");
-    insere_ArvBin(raiz, "a");
-    inOrdem_ArvBin(raiz);
-    */
-
 
     return 0;
 }

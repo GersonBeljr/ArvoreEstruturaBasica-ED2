@@ -251,36 +251,6 @@ int insere_ArvBin(ArvBin* raiz, char valor[]){
     };
 };
 
-int remove_ArvBin(ArvBin *raiz, char valor[]){
-    //Verifica se a arvore já não existe
-    if(raiz == NULL) return 0;
-    
-    struct NO* ant = NULL;
-    struct NO* atual = *raiz;
-    while(atual != NULL){
-        // caso tenha achado o no a ser removido
-        if(valor == atual->info){
-            if(atual == *raiz)
-                *raiz = remove_atual(atual);
-            else{
-                if(ant->dir == atual)
-                    ant->dir = remove_atual(atual);
-                else
-                    ant->esq = remove_atual(atual);
-            };
-            return 1;
-        }
-        
-        //Anda para o proximo nó, esq ou dir
-        ant = atual;
-        if(valor > atual->info)
-            atual = atual->dir;
-        else 
-            atual = atual->esq;
-    }
-    
-}
-
 //consulta: retorna 1 se achou e 0 se não;
 int consulta_ArvBin(ArvBin *raiz, char valor[]){
     if(raiz == NULL)
@@ -347,6 +317,29 @@ int main()
         ArvBin* raiz = cria_ArvBin();
         printf("\n%dª EXPRESSÃO: \n", e);
         for(i=0;carro->exp[i]!='\0';i++){
+            //se for funcao
+            if(carro->exp[i]=='s' && carro->exp[i+1]=='q'){
+                sprintf(expPart, "%s","sqrt");
+                insere_ArvBin(raiz, expPart);
+                i = i+3;
+                continue;
+            }
+
+            if(carro->exp[i]=='l' && carro->exp[i+1]=='o'){
+                sprintf(expPart, "%s","log");
+                insere_ArvBin(raiz, expPart);
+                i = i+2;
+                continue;
+            }
+
+            if(carro->exp[i]=='n' && carro->exp[i+1]=='e'){
+                sprintf(expPart, "%s","neg");
+                insere_ArvBin(raiz, expPart);
+                i = i+2;
+                continue;
+            }
+
+
             sprintf(expPart, "%c", carro->exp[i]);
             insere_ArvBin(raiz, expPart);
         }
@@ -354,7 +347,7 @@ int main()
         carro = carro->next;
 
         //LIBERA TD
-        libera_ArvBin(*raiz);  
+        libera_ArvBin(raiz);  
         e++;
     } 
 

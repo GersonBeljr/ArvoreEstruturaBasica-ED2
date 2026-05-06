@@ -50,51 +50,62 @@ char* toPreFix(char exp[]){
     char *tokens[30];
     int n = 0;
 
-    //Tokenizar por espaço
+    //tokeniza
     char *t = strtok(copia, " ");
     while(t != NULL){
         tokens[n++] = t;
         t = strtok(NULL, " ");
     }
 
-    //Pilha de strings
-    char *pilha[30];
-    int topo = -1;
+    //inverter tokens
+    for(int i = 0; i < n/2; i++){
+        char *tmp = tokens[i];
+        tokens[i] = tokens[n-1-i];
+        tokens[n-1-i] = tmp;
+    }
 
-    //Percorrer de trás pra frente (prefixa)
-    for(int i = n-1; i >= 0; i--){
+    char *pilhaOp[30];
+    int topoOp = -1;
+
+    char *saida[30];
+    int k = 0;
+
+    for(int i = 0; i < n; i++){
         char *tok = tokens[i];
 
-        // operando (número, variável, função)
         if(strcmp(tok, "+") != 0 &&
            strcmp(tok, "-") != 0 &&
            strcmp(tok, "*") != 0 &&
            strcmp(tok, "/") != 0 &&
            strcmp(tok, "^") != 0){
 
-            pilha[++topo] = tok;
+            saida[k++] = tok;
         }
         else{
-            // operador → pega dois operandos
-            if(topo < 1) return exp; // erro
-
-            char *op1 = pilha[topo--];
-            char *op2 = pilha[topo--];
-
-            static char temp[100];
-            temp[0] = '\0';
-
-            strcat(temp, tok);
-            strcat(temp, " ");
-            strcat(temp, op1);
-            strcat(temp, " ");
-            strcat(temp, op2);
-
-            pilha[++topo] = temp;
+            while(topoOp != -1 &&
+                  precedencia(pilhaOp[topoOp][0]) > precedencia(tok[0])){
+                saida[k++] = pilhaOp[topoOp--];
+            }
+            pilhaOp[++topoOp] = tok;
         }
     }
 
-    // resultado final
-    strcpy(resultado, pilha[topo]);
+    while(topoOp != -1){
+        saida[k++] = pilhaOp[topoOp--];
+    }
+
+    //inverter pra prefixa
+    for(int i = 0; i < k/2; i++){
+        char *tmp = saida[i];
+        saida[i] = saida[k-1-i];
+        saida[k-1-i] = tmp;
+    }
+
+    //MONTA NO FINAL
+    for(int i = 0; i < k; i++){
+        strcat(resultado, saida[i]);
+        if(i != k-1) strcat(resultado, " ");
+    }
+
     return resultado;
 }

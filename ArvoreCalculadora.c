@@ -94,7 +94,7 @@ void preOrdem_ArvBin(ArvBin *raiz){
     if(raiz == NULL)
         return;
     if(*raiz != NULL){
-        printf("%s", (*raiz)->info);
+        printf("%s ", (*raiz)->info);
         preOrdem_ArvBin(&((*raiz)->esq));
         preOrdem_ArvBin(&((*raiz)->dir));
     }
@@ -106,7 +106,7 @@ void inOrdem_ArvBin(ArvBin *raiz){
         return;
     if(*raiz != NULL){
         inOrdem_ArvBin(&((*raiz)->esq));
-        printf("%s", (*raiz)->info);
+        printf("%s ", (*raiz)->info);
         inOrdem_ArvBin(&((*raiz)->dir));
     }
 };
@@ -118,7 +118,7 @@ void posOrdem_ArvBin(ArvBin *raiz){
     if(*raiz != NULL){
         posOrdem_ArvBin(&((*raiz)->esq));
         posOrdem_ArvBin(&((*raiz)->dir));
-        printf("%s", (*raiz)->info);
+        printf("%s ", (*raiz)->info);
     }
 };
 
@@ -277,7 +277,8 @@ int main()
     while(1){
         printf("insira a expressão de até 30 caracteres (0 para terminar): ");
         fgets(expressao, sizeof(expressao), stdin); //scaneia espacos, só para qndo quebra linha
-        if(strcmp(expressao, "0\n") == 0) break;//o fgets deixa o \n no final
+        expressao[strcspn(expressao, "\n")] = '\0'; //troca o \n do enter por \0
+        if(strcmp(expressao, "0") == 0) break;//o fgets deixa o \n no final
 
         //cria novo nó
         NoLista *new = (NoLista*) malloc(sizeof(NoLista));
@@ -316,81 +317,21 @@ int main()
     carro = *lista;
     int i=0;
     e=1;
-    char expPart[20];
 
     printf("-----ÁRVORES DE CADA EXPRESSÃO ESCRITAS EM INORDEM-----\n");
     while(carro!=NULL){
         ArvBin* raiz = cria_ArvBin();
-        printf("\n%dª EXPRESSÃO: \n", e);
-        for(i=0;carro->exp[i]!='\0';i++){
-            //se for funcao
-            if(carro->exp[i]=='s' && carro->exp[i+1]=='q'){
-                insere_ArvBin(raiz, expPart);
-                sprintf(expPart, "%s","sqrt");
-                insere_ArvBin(raiz, expPart);
-                i = i+3;
-                continue;
-            }
+        char copia[30];
+        strcpy(copia, carro->exp);
 
-            if(carro->exp[i]=='l' && carro->exp[i+1]=='o'){
-                insere_ArvBin(raiz, expPart);
-                sprintf(expPart, "%s","log");
-                insere_ArvBin(raiz, expPart);
-                i = i+2;
-                continue;
-            }
+        char *token = strtok(copia, " ");
 
-            if(carro->exp[i]=='n' && carro->exp[i+1]=='e'){
-                insere_ArvBin(raiz, expPart);
-                sprintf(expPart, "%s","neg");
-                insere_ArvBin(raiz, expPart);
-                sprintf(expPart, "%s","");
-                i = i+2;
-                continue;
-            }
-            
-            //se for op
-            switch (carro->exp[i]) {
-                case '+':
-                    insere_ArvBin(raiz, expPart); //insere o número q ta guardado (pq ele acabou)
-                    sprintf(expPart, "%c",carro->exp[i]);//tira o número e bota o op 
-                    insere_ArvBin(raiz, expPart);//insere o op
-                    sprintf(expPart, "%s",""); //tira o op
-                    break;
-                case '-':
-                    insere_ArvBin(raiz, expPart); //insere o número q ta guardado (pq ele acabou)
-                    sprintf(expPart, "%c",carro->exp[i]);//tira o número e bota o op 
-                    insere_ArvBin(raiz, expPart);//insere o op
-                    sprintf(expPart, "%s",""); //tira o op
-                    break;
-                case '*':
-                    insere_ArvBin(raiz, expPart); //insere o número q ta guardado (pq ele acabou)
-                    sprintf(expPart, "%c",carro->exp[i]);//tira o número e bota o op 
-                    insere_ArvBin(raiz, expPart);//insere o op
-                    sprintf(expPart, "%s",""); //tira o op
-                    break;
-                case '/':
-                    insere_ArvBin(raiz, expPart); //insere o número q ta guardado (pq ele acabou)
-                    sprintf(expPart, "%c",carro->exp[i]);//tira o número e bota o op 
-                    insere_ArvBin(raiz, expPart);//insere o op
-                    sprintf(expPart, "%s",""); //tira o op
-                    break;
-                case '^':
-                    insere_ArvBin(raiz, expPart); //insere o número q ta guardado (pq ele acabou)
-                    sprintf(expPart, "%c",carro->exp[i]);//tira o número e bota o op 
-                    insere_ArvBin(raiz, expPart);//insere o op
-                    sprintf(expPart, "%s",""); //tira o op
-                    break;
-                case 20:
-                    //espaço
-                    insere_ArvBin(raiz, expPart); //insere o número q ta guardado (pq ele acabou)
-                    sprintf(expPart, "%s",""); //tira o numero
-                    break;
-                default:
-                    //é dígito
-                    sprintf(expPart + strlen(expPart), "%c", carro->exp[i]); //bota o dígito sem tirar os outros
-            }
+        while(token != NULL){
+            insere_ArvBin(raiz, token);
+            token = strtok(NULL, " ");
         }
+
+        printf("\n%dª EXPRESSÃO: \n", e);
         inOrdem_ArvBin(raiz);
         printf("\n");
         carro = carro->next;

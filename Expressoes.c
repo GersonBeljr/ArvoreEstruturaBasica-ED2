@@ -41,63 +41,60 @@ void inverter(char *str){
 }
 
 char* toPreFix(char exp[]){
-    static char resultado[30];
-    char temp[30];
-    char pilha[30];
+    static char resultado[100];
+    resultado[0] = '\0';
+
+    char copia[100];
+    strcpy(copia, exp);
+
+    char *tokens[30];
+    int n = 0;
+
+    //Tokenizar por espaço
+    char *t = strtok(copia, " ");
+    while(t != NULL){
+        tokens[n++] = t;
+        t = strtok(NULL, " ");
+    }
+
+    //Pilha de strings
+    char *pilha[30];
     int topo = -1;
 
-    strcpy(temp, exp);
+    //Percorrer de trás pra frente (prefixa)
+    for(int i = n-1; i >= 0; i--){
+        char *tok = tokens[i];
 
-    // 1. inverter expressão
-    inverter(temp);
+        // operando (número, variável, função)
+        if(strcmp(tok, "+") != 0 &&
+           strcmp(tok, "-") != 0 &&
+           strcmp(tok, "*") != 0 &&
+           strcmp(tok, "/") != 0 &&
+           strcmp(tok, "^") != 0){
 
-    // 2. trocar parênteses
-    for(int i = 0; temp[i]; i++){
-        if(temp[i] == '(') temp[i] = ')';
-        else if(temp[i] == ')') temp[i] = '(';
-    }
-
-    int k = 0;
-
-    // 3. infixa → pós-fixa
-    for(int i = 0; temp[i]; i++){
-        char c = temp[i];
-
-        // operando
-        if((c >= 'a' && c <= 'z') ||
-           (c >= 'A' && c <= 'Z') ||
-           (c >= '0' && c <= '9')){
-            resultado[k++] = c;
+            pilha[++topo] = tok;
         }
-        // abre parêntese
-        else if(c == '('){
-            pilha[++topo] = c;
-        }
-        // fecha parêntese
-        else if(c == ')'){
-            while(topo != -1 && pilha[topo] != '('){
-                resultado[k++] = pilha[topo--];
-            }
-            topo--; // remove '('
-        }
-        // operador
         else{
-            while(topo != -1 && precedencia(pilha[topo]) >= precedencia(c)){
-                resultado[k++] = pilha[topo--];
-            }
-            pilha[++topo] = c;
+            // operador → pega dois operandos
+            if(topo < 1) return exp; // erro
+
+            char *op1 = pilha[topo--];
+            char *op2 = pilha[topo--];
+
+            static char temp[100];
+            temp[0] = '\0';
+
+            strcat(temp, tok);
+            strcat(temp, " ");
+            strcat(temp, op1);
+            strcat(temp, " ");
+            strcat(temp, op2);
+
+            pilha[++topo] = temp;
         }
     }
 
-    // esvaziar pilha
-    while(topo != -1){
-        resultado[k++] = pilha[topo--];
-    }
-
-    resultado[k] = '\0';
-
-    // 4. inverter resultado → prefixa
-    inverter(resultado);
-
+    // resultado final
+    strcpy(resultado, pilha[topo]);
     return resultado;
 }

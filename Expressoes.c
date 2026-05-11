@@ -7,7 +7,7 @@ FUNÇÕES DE TRADUÇÃO DAS EXPRESSÕES PARA PRÉ E PÓS ORDEM
 #include <string.h>
 
 typedef struct NoLista{
-    char exp[30]; //a info deve ser char para aceitar os símbolos e letras (e para os numeros, 10 digitos max)
+    char exp[60]; //a info deve ser char para aceitar os símbolos e letras (e para os numeros, 10 digitos max)
     struct NoLista *next;
 }NoLista;
 
@@ -47,7 +47,7 @@ char* toPreFix(char exp[]){
     char copia[100];
     strcpy(copia, exp);
 
-    char *tokens[30];
+    char *tokens[60];
     int n = 0;
 
     //tokeniza
@@ -64,7 +64,7 @@ char* toPreFix(char exp[]){
         tokens[n-1-i] = tmp;
     }
 
-    char *pilhaOp[30];
+    char *pilhaOp[60];
     int topoOp = -1;
 
     char *saida[30];

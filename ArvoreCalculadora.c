@@ -272,7 +272,7 @@ int consulta_ArvBin(ArvBin *raiz, char valor[]){
 int main()
 {   
     ListaExp* lista = criaLista();
-    char expressao[30];
+    char expressao[60];
 
     while(1){
         printf("insira a expressão de até 30 caracteres (0 para terminar): ");
@@ -321,7 +321,7 @@ int main()
     printf("-----ÁRVORES DE CADA EXPRESSÃO ESCRITAS EM INORDEM-----\n");
     while(carro!=NULL){
         ArvBin* raiz = cria_ArvBin();
-        char copia[30];
+        char copia[60];
         strcpy(copia, carro->exp);
 
         char *token = strtok(copia, " ");

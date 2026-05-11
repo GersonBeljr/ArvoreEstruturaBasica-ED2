@@ -9,11 +9,9 @@
 typedef enum {
     NUMERO,
     OPERADOR,
-    CHEIO,
     FUNCAO,
 } Tipo;
 
-//Define a estrutura
 typedef struct NO{
     Tipo tipo;
     char info[10]; //a info deve ser char para aceitar os símbolos e letras (e para os numeros, 10 digitos max)
@@ -122,152 +120,46 @@ void posOrdem_ArvBin(ArvBin *raiz){
     }
 };
 
-//Inserçao, Remoçao e consulta em Arvore Binaria
-//Inserçao:
-int insere_ArvBin(ArvBin* raiz, char valor[]){
-    //Verifica se a raiz existe
-    if(raiz == NULL)
-        return 0;
-        
-    struct NO* new;
-    new = (struct NO*) malloc(sizeof(struct NO));
-    //Verifica se o novo nó foi criado corretamente
-    if(new == NULL)
-        return 0;
-    
-    strcpy(new->info, valor); //passar a string valor
-    new->dir = NULL;
-    new->esq = NULL;
-    
-    //coloca o tipo certo
-    if(strcmp(new->info, "sqrt") == 0 ||
-       strcmp(new->info, "log") == 0 ||
-        strcmp(new->info, "neg") == 0)
-        new->tipo = FUNCAO;
-    else if(strcmp(new->info, "+") == 0 ||
-            strcmp(new->info, "-") == 0 ||
-            strcmp(new->info, "*") == 0 ||
-            strcmp(new->info, "/") == 0 ||
-            strcmp(new->info, "^") == 0)
-            new->tipo = OPERADOR;
-    else new->tipo = NUMERO;
-    
-    
-    if(*raiz == NULL){
-        *raiz = new;
-        return 1;
+NO* construir(char *tokens[], int *pos){ //passa a lista de tokens inteira de uma vez e insere tds recursivamente
+    if(tokens[*pos] == NULL)
+        return NULL;
+
+    // cria nodo
+    NO *novo = (NO*) malloc(sizeof(NO));
+
+    strcpy(novo->info, tokens[*pos]);
+    novo->esq = NULL;
+    novo->dir = NULL;
+
+    if(strcmp(novo->info, "+") == 0 ||
+       strcmp(novo->info, "-") == 0 ||
+       strcmp(novo->info, "*") == 0 ||
+       strcmp(novo->info, "/") == 0 ||
+       strcmp(novo->info, "^") == 0){
+
+        novo->tipo = OPERADOR;
+    }
+    else if(strcmp(novo->info, "sqrt") == 0 ||
+            strcmp(novo->info, "log") == 0 ||
+            strcmp(novo->info, "neg") == 0){
+
+        novo->tipo = FUNCAO;
     }
     else{
-        struct NO* atual = *raiz;
-        struct NO* ant = NULL;
-        while(atual != NULL){
-            
-            //CHEIO NA ESQ
-            if(atual->esq!=NULL && atual->esq->tipo==CHEIO){
-                //CHEIO PROS DOIS LADOS
-                if(atual->dir!=NULL && atual->dir->tipo==CHEIO){
-                    if(ant==NULL){
-                        //aq o usuário colocou um nodo a mais, deve falar que não dá pra colocar e sair
-                        printf("erro de inserção: verifique a sintaxe da sua expressão (lembre-se deve estar pré-ordenada)\n");
-                        break;
-                    }
-                    //da ré até o final pra garantir e abate esse op
-                    atual->tipo=CHEIO;
-                    atual = *raiz;
-                    ant = NULL;
-                    continue;
-                }
-
-                if(atual->dir==NULL){
-                    //coloca
-                    atual->dir=new;
-                    break;
-                }
-                //anda
-                ant = atual;
-                atual= atual->dir;
-                continue;
-            }
-
-            if(atual->tipo==OPERADOR){
-                if(atual->esq!=NULL && (atual->esq->tipo==NUMERO||atual->esq->tipo==CHEIO) && atual->dir!=NULL && (atual->dir->tipo==NUMERO||atual->dir->tipo==CHEIO)){
-                    //da ré até o começo e abate esse op
-                    atual->tipo=CHEIO;
-                    atual = *raiz;
-                    continue;
-                }
-            }
-            
-            if(atual->tipo==FUNCAO){
-                if(atual->dir!=NULL && (atual->dir->tipo==NUMERO||atual->dir->tipo==CHEIO)){
-                    //da ré até a raiz e abate essa func
-                    atual->tipo=CHEIO;
-                    atual = *raiz;
-                    ant=NULL;
-                    continue;
-                }
-                if(atual->dir==NULL){
-                    //coloca
-                    atual->dir=new;
-                    break;
-                } else{
-                    //anda
-                    ant = atual;
-                    atual = atual->dir;
-                    continue;
-                }
-            }
-
-            if(atual->esq==NULL){
-                //coloca
-                atual->esq=new;
-                break;
-            } else{
-                if(atual->esq != NULL && atual->esq->tipo == OPERADOR){
-                    //anda
-                    ant = atual;
-                    atual=atual->esq;
-                    continue;
-                }
-                if(atual->esq != NULL && atual->esq->tipo == FUNCAO){
-                    //anda
-                    ant = atual;
-                    atual=atual->esq;
-                    continue;
-                }
-                if(atual->dir==NULL){
-                    //coloca
-                    atual->dir=new;
-                    break;
-                }
-                //anda
-                ant = atual;
-                atual= atual->dir;
-                continue;
-            }
-        };
-        
-        return 1;
-    };
-};
-
-//consulta: retorna 1 se achou e 0 se não;
-int consulta_ArvBin(ArvBin *raiz, char valor[]){
-    if(raiz == NULL)
-        return 0;
-    struct NO* atual = *raiz;
-    while(atual != NULL){
-        if(valor == atual->info){
-            return 1;
-        }
-        if(valor > atual->info)
-            atual = atual->dir;
-        else
-            atual = atual->esq;
+        novo->tipo = NUMERO;
     }
-    return 0;
-}
+    (*pos)++;
 
+    if(novo->tipo == OPERADOR){
+        novo->esq = construir(tokens, pos);
+        novo->dir = construir(tokens, pos);
+    }
+    // função unária
+    else if(novo->tipo == FUNCAO){
+        novo->dir = construir(tokens, pos);
+    }
+    return novo;
+}
 
 int main()
 {   
@@ -324,12 +216,18 @@ int main()
         char copia[60];
         strcpy(copia, carro->exp);
 
-        char *token = strtok(copia, " ");
+        char *t = strtok(copia, " ");
+        char *tokens[30];
+        int i =0;
 
-        while(token != NULL){
-            insere_ArvBin(raiz, token);
-            token = strtok(NULL, " ");
+        while(t != NULL){
+            tokens[i++] = t;
+            t = strtok(NULL, " ");
         }
+        
+        int pos = 0;
+        NO *r = construir(tokens, &pos);
+        *raiz = r;
 
         printf("\n%dª EXPRESSÃO: \n", e);
         inOrdem_ArvBin(raiz);

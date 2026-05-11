@@ -5,6 +5,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <math.h>
 
 typedef enum {
     NUMERO,
@@ -123,38 +124,36 @@ void posOrdem_ArvBin(ArvBin *raiz){
 NO* construir(char *tokens[], int *pos){ //passa a lista de tokens inteira de uma vez e insere tds recursivamente
     if(tokens[*pos] == NULL)
         return NULL;
+    //CRIAR NO E ATRIBUIR VALOR
+        NO *novo = (NO*) malloc(sizeof(NO));
 
-    // cria nodo
-    NO *novo = (NO*) malloc(sizeof(NO));
+        strcpy(novo->info, tokens[*pos]);
+        novo->esq = NULL;
+        novo->dir = NULL;
 
-    strcpy(novo->info, tokens[*pos]);
-    novo->esq = NULL;
-    novo->dir = NULL;
-
-    if(strcmp(novo->info, "+") == 0 ||
-       strcmp(novo->info, "-") == 0 ||
-       strcmp(novo->info, "*") == 0 ||
-       strcmp(novo->info, "/") == 0 ||
-       strcmp(novo->info, "^") == 0){
-
-        novo->tipo = OPERADOR;
-    }
-    else if(strcmp(novo->info, "sqrt") == 0 ||
-            strcmp(novo->info, "log") == 0 ||
-            strcmp(novo->info, "neg") == 0){
-
-        novo->tipo = FUNCAO;
-    }
-    else{
-        novo->tipo = NUMERO;
-    }
+        if(strcmp(novo->info, "+") == 0 ||
+        strcmp(novo->info, "-") == 0 ||
+        strcmp(novo->info, "*") == 0 ||
+        strcmp(novo->info, "/") == 0 ||
+        strcmp(novo->info, "^") == 0){
+            novo->tipo = OPERADOR;
+        }
+        else if(strcmp(novo->info, "sqrt") == 0 ||
+                strcmp(novo->info, "log") == 0 ||
+                strcmp(novo->info, "neg") == 0){
+            novo->tipo = FUNCAO;
+        }
+        else{
+            novo->tipo = NUMERO;
+        }
+    //att o índice atravéz de um ptr pq vai usar passar para tds as funções o msm valor (conteúdo tem q ficar fora)
     (*pos)++;
 
+    //SE TIVER CRIADO UMA OPERACAO OU FUNCAO, CONSTRÓI O Q TEM ATRÁS. SE FOR UM NUMERO SÓ COLOCA
     if(novo->tipo == OPERADOR){
         novo->esq = construir(tokens, pos);
         novo->dir = construir(tokens, pos);
     }
-    // função unária
     else if(novo->tipo == FUNCAO){
         novo->dir = construir(tokens, pos);
     }
@@ -217,6 +216,7 @@ int main()
         strcpy(copia, carro->exp);
 
         char *t = strtok(copia, " ");
+        //30 tokens ~= 60 chars
         char *tokens[30];
         int i =0;
 
@@ -227,7 +227,7 @@ int main()
         
         int pos = 0;
         NO *r = construir(tokens, &pos);
-        *raiz = r;
+        *raiz = r; //raiz aponta pra pro primeiro no
 
         printf("\n%dª EXPRESSÃO: \n", e);
         inOrdem_ArvBin(raiz);

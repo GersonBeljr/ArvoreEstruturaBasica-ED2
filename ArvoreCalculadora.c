@@ -229,8 +229,9 @@ int main()
         *raiz = r; //raiz aponta pra pro primeiro no
 
         printf("\n%dª EXPRESSÃO: \n", e);
+        printf("--árvore lida em inOrdem: ");
         inOrdem_ArvBin(raiz);
-        printf("\n");
+        printf("\n--resultado: %.2f \n", calcular(r));
         carro = carro->next;
 
         //LIBERA TD
